@@ -14,5 +14,4 @@ python3 -m twine upload dist/*
 
 rm -rf build 2> /dev/null
 rm -rf dist 2> /dev/null
-rm -rf seleniumprocessor.egg-info 2> /dev/null
-rm -rf seleniumprocessor.egg-info 2> /dev/null
+rm -rf *.egg-info 2> /dev/null
