@@ -36,7 +36,7 @@ process_portfolio = [
 		{'class_name':'quantity', 'action':'store_text', 'action_parameters':'shares'}
 	]},
 	{'class_name':'portfolio-icon', 'action':'click', 'sleep':PAGELOAD_TO, 'filter':FILTER_REAL},
-	{'class_name':'investment-item', 'action':'foreach', 'action_parameters':[
+	{'class_name':'investment-item', 'action':'foreach', 'filter':FILTER_REAL, 'action_parameters':[
 		{'class_name':'instrument-name', 'action':'store_text', 'action_parameters':'name'},
 		{'class_name':'instrument-name', 'action':'click', 'sleep':PAGEJS_TO},
 		{'class_name':'ticker', 'action':'store_text', 'action_parameters':'ticker', 'context':'whole_page'},
