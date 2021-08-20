@@ -25,7 +25,8 @@ FILTER_REAL = 'live'
 FILTER_PRACTICE = 'demo'
 
 URL_LOGIN = 'https://www.trading212.com/login'
-URL_HOME = 'https://{}.trading212.com'
+URL_HOME_BASE = 'https://{}.trading212.com'
+URL_HOME = URL_HOME_BASE
 
 # declaration of processes
 
@@ -102,12 +103,12 @@ def checkfilterpassed(f):
 # function to enable real/live mode
 def enable_real_mode():
 	global URL_HOME
-	URL_HOME = URL_HOME.format(FILTER_REAL)
+	URL_HOME = URL_HOME_BASE.format(FILTER_REAL)
 
 # function to enable practice/demo mode
 def enable_practice_mode():
 	global URL_HOME, PAGELOAD_TO, PAGEJS_TO
-	URL_HOME = URL_HOME.format(FILTER_PRACTICE)
+	URL_HOME = URL_HOME_BASE.format(FILTER_PRACTICE)
 	PAGELOAD_TO *= 3
 	PAGEJS_TO *= 3
 
@@ -145,6 +146,7 @@ def get_portfolio(brw):
 		else:
 			portfolio[i]['valuta'] = portfolio[i].get('quantity_and_price_full').split(' ')[2][0]
 			portfolio[i]['value'] = portfolio[i].get('quantity_and_price_full').split(' ')[2][1:]
+			del portfolio[i]['quantity_and_price_full']
 		portfolio[i]['value'] = float(portfolio[i].get('value').replace(',', ''))
 		if ' ' in portfolio[i].get('shares'): portfolio[i]['shares'] = float(portfolio[i].get('shares').split(' ')[0].replace(',', ''))
 		if not portfolio[i].get('return_value') is None:
