@@ -33,7 +33,11 @@ process_portfolio = [
 	{'class_name':'home-icon', 'action':'click', 'sleep':PAGELOAD_TO, 'filter':FILTER_PRACTICE},
 	{'class_name':'positions-table-item', 'action':'foreach', 'filter':FILTER_PRACTICE, 'action_parameters':[
 		{'class_name':'instrument-name', 'action':'store_text', 'action_parameters':'name'},
-		{'class_name':'quantity', 'action':'store_text', 'action_parameters':'shares'}
+		{'class_name':'quantity', 'action':'store_text', 'action_parameters':'shares'},
+		{'class_name':'instrument-name', 'action':'click', 'sleep':PAGELOAD_TO},
+		{'class_name':'quantity-and-price', 'action':'store_text', 'action_parameters':'quantity_and_price_full', 'context':'whole_page'},
+		{'class_name':'formatted-price', 'action':'store_text', 'action_parameters':'value'},
+		{'class_name':'position-result', 'action':'store_text', 'action_parameters':'return_value', 'context':'whole_page'},
 	]},
 	{'class_name':'portfolio-icon', 'action':'click', 'sleep':PAGELOAD_TO, 'filter':FILTER_REAL},
 	{'class_name':'investment-item', 'action':'foreach', 'filter':FILTER_REAL, 'action_parameters':[
@@ -135,12 +139,21 @@ def get_portfolio(brw):
 	# processing output for better presentation
 	portfolio = portfolio.get('list')
 	for i in range(0, len(portfolio)):
-		portfolio[i]['valuta'] = portfolio[i].get('value')[0]
-		portfolio[i]['value'] = float(portfolio[i].get('value')[1:].replace(',', ''))
-		portfolio[i]['shares'] = float(portfolio[i].get('shares').split(' ')[0].replace(',', ''))
-		portfolio[i]['return_percentage'] = float(portfolio[i].get('return').split('(')[1].split('%')[0])
-		portfolio[i]['return'] = portfolio[i].get('return').split(' ')[0][1:]
-	return portfolio
+		if portfolio[i].get('quantity_and_price_full') is None:
+			portfolio[i]['valuta'] = portfolio[i].get('value')[0]
+			portfolio[i]['value'] = portfolio[i].get('value')[1:]
+		else:
+			portfolio[i]['valuta'] = portfolio[i].get('quantity_and_price_full').split(' ')[2][0]
+			portfolio[i]['value'] = portfolio[i].get('quantity_and_price_full').split(' ')[2][1:]
+		portfolio[i]['value'] = float(portfolio[i].get('value').replace(',', ''))
+		if ' ' in portfolio[i].get('shares'): portfolio[i]['shares'] = float(portfolio[i].get('shares').split(' ')[0].replace(',', ''))
+		if not portfolio[i].get('return_value') is None:
+			portfolio[i]['return'] = '{} ({}%)'.format(portfolio[i].get('return_value'), float(float(portfolio[i].get('return_value')[1:]) / float(portfolio[i].get('value')) * 100))
+			del portfolio[i]['return_value']
+		if not portfolio[i].get('return') is None:
+			portfolio[i]['return_percentage'] = float(portfolio[i].get('return').split('(')[1].split('%')[0])
+		portfolio[i]['return'] = float(portfolio[i].get('return').split(' ')[0][1:])
+		return portfolio
 
 # buys a stock identified by its own ticket, specifying the amount to spent (in current valuta) and an optional maximum price
 def buy(brw, ticker, amount, max_price=None):
