@@ -1,3 +1,18 @@
+Metadata-Version: 2.1
+Name: trading212api
+Version: 0.0.1
+Summary: An unofficial API library for Trading212 based on Selenium
+Home-page: https://github.com/auino/trading212api
+Author: Enrico Cambiaso
+Author-email: enrico.cambiaso@gmail.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+
 # trading212api
 
 An unofficial API library for Trading212 based on Selenium
@@ -31,24 +46,24 @@ Install a [Selenium](https://www.selenium.dev) web driver, e.g., the [Chrome Web
 import trading212api
 
 # enable practice mode
-trading212api.enable_practice_mode()
+enable_practice_mode()
 
 # initiate the connection
 brw = trading212api.initiate_connection('./chromedriver')
 
 # get and print portfolio information
-portfolio = trading212api.get_portfolio(brw)
+portfolio = get_portfolio(brw)
 print(portfolio)
 
 # get and print information on a given stock
-stock_info = trading212api.get_stock_info(brw, 'AAPL')
+stock_info = get_stock_info(brw, 'AAPL')
 print(stock_info)
 
 # buy 10 USD of AAPL
-trading212api.buy(brw, 'AAPL', 10)
+buy(brw, 'AAPL', 10)
 
 # sell 1 stock of AAPL
-trading212api.sell(brw, 'AAPL', 1)
+sell(brw, 'AAPL', 1)
 ```
 
 ### TODO ###
@@ -58,3 +73,5 @@ trading212api.sell(brw, 'AAPL', 1)
 ### Contacts ###
 
 You can find me on [Twitter](https://twitter.com) as [@auino](https://twitter.com/auino).
+
+
