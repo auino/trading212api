@@ -4,7 +4,7 @@ with open("README.md", "r") as fh: long_description = fh.read()
 
 setuptools.setup(
     name="trading212api",
-    version="0.0.7",
+    version="0.0.8",
     author="Enrico Cambiaso",
     author_email="enrico.cambiaso@gmail.com",
     description="An unofficial API library for Trading212 based on Selenium",

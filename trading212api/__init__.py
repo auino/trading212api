@@ -107,10 +107,15 @@ def enable_real_mode():
 
 # function to enable practice/demo mode
 def enable_practice_mode():
-	global URL_HOME, PAGELOAD_TO, PAGEJS_TO
+	global URL_HOME
 	URL_HOME = URL_HOME_BASE.format(FILTER_PRACTICE)
-	PAGELOAD_TO *= 3
-	PAGEJS_TO *= 3
+	set_timeouts(PAGELOAD_TO*3, PAGEJS_TO*3)
+
+# function to manually set timeouts used by the program
+def set_timeouts(pageload, pagejs):
+	global PAGEJS_TO, PAGEJS_TO
+	PAGELOAD_TO = pageload
+	PAGEJS_TO = pagejs
 
 # initiates a connection to URL_HOME
 def initiate_connection(webdriverfile, loginrequired=True):
