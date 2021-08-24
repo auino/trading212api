@@ -113,8 +113,8 @@ def enable_practice_mode():
 	PAGEJS_TO *= 3
 
 # initiates a connection to URL_HOME
-def initiate_connection(webdriverfile):
-	return seleniumprocessor.initiate_connection(webdriverfile, get_urlhome(), HOMELOAD_TO)
+def initiate_connection(webdriverfile, loginrequired=True):
+	return seleniumprocessor.initiate_connection(webdriverfile, get_urlhome(), HOMELOAD_TO, loginrequired)
 
 # retrieves information from a stock with a given ticker, optionally, returning home at the begin/end of the method
 def get_stock_info(brw, ticker, backtohome_begin=True, backtohome_end=True):

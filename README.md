@@ -19,6 +19,7 @@ Install a [Selenium](https://www.selenium.dev) web driver, e.g., the [Chrome Web
 
 * `enable_real_mode()`: this method is used to enable real/live mode
 * `enable_practice_mode()`: this method is used to enable practice/demo mode
+* `initiate_connection(webdriverfile, loginrequired=True)`: initializes the connection to [Trading212](https://www.trading212.com) through [Selenium](https://www.selenium.dev), optionally asking for user input in case a manual login is required (`loginrequired=True`)
 * `get_stock_info(brw, ticker, backtohome_begin=True, backtohome_end=True)`: starting from a `selenium.webdriver.chrome.webdriver.WebDriver` object `brw`, this method retrieves information from a stock identified by a given `ticker`, optionally, returning home at the begin/end of the method
 * `get_portfolio(brw)`: starting from a `selenium.webdriver.chrome.webdriver.WebDriver` object `brw`, this method returns information on the current portfolio
 * `buy(brw, ticker, amount, max_price=None)`: starting from a `selenium.webdriver.chrome.webdriver.WebDriver` object `brw`, this method buys a stock identified by its own `ticket`, specifying the `amount` in terms of money to invest in the current valuta, plus an optional maximum price `max_price`; returns a boolean value indicating the success of the operation
