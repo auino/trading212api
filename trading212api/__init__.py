@@ -7,6 +7,7 @@
 import copy
 import seleniumprocessor
 from selenium.webdriver.common.keys import Keys
+from selenium import webdriver
 
 # declaration of classes of exceptions
 
@@ -33,6 +34,14 @@ URL_HOME = URL_HOME_BASE
 
 # declaration of processes
 
+process_login = [
+	{'name':'email', 'action':'click', 'sleep':PAGEJS_TO},
+	{'name':'email', 'action':'send_keys', 'action_parameters':'{USERNAME}', 'sleep':PAGEJS_TO},
+	{'name':'password', 'action':'click', 'sleep':PAGEJS_TO},
+	{'name':'password', 'action':'send_keys', 'action_parameters':'{PASSWORD}', 'sleep':PAGEJS_TO},
+	{'class_name':'submit-button', 'action':'click', 'sleep':PAGELOAD_TO}
+]
+
 process_portfolio = [
 	{'class_name':'home-icon', 'action':'click', 'sleep':PAGELOAD_TO, 'filter':FILTER_PRACTICE},
 	{'class_name':'positions-table-item', 'action':'foreach', 'filter':FILTER_PRACTICE, 'action_parameters':[
@@ -52,6 +61,19 @@ process_portfolio = [
 		{'class_name':'quantity', 'action':'store_text', 'action_parameters':'shares'},
 		{'class_name':'return', 'action':'store_text', 'action_parameters':'return'}
 	]}
+]
+
+process_getstocks_begin = [
+	{'class_name':'search-icon', 'action':'click', 'sleep':PAGELOAD_TO},
+	{'class_name':'search-folder-header', 'action':'navigate', 'action_parameters':'{NAVIGATION_PATH}', 'sleep':PAGEJS_TO}
+]
+
+process_getstocks_storeandscroll = [
+	{'class_name':'item-wrapper', 'action':'foreach', 'action_parameters':[
+		{'class_name':'name', 'action':'store_text', 'action_parameters':'name'},
+		{'class_name':'secondary-name', 'action':'store_text', 'action_parameters':'ticker'}
+	]},
+	{'class_name':'item-wrapper', 'index':-1, 'action':'scroll_to', 'sleep':PAGELOAD_TO}
 ]
 
 process_stockinfo = [
@@ -122,8 +144,11 @@ def update_timeouts(increase):
 		PAGELOAD_TO /= FACTOR_TO
 		PAGEJS_TO /= FACTOR_TO
 	# updating process timeouts
-	global process_portfolio, process_stockinfo, process_buy, process_sell
+	global process_login, process_portfolio, process_stockinfo, process_getstocks_begin, process_getstocks_storeandscroll, process_buy, process_sell
+	process_login = update_process_sleep(process_login, increase)
 	process_portfolio = update_process_sleep(process_portfolio, increase)
+	process_getstocks_begin = update_process_sleep(process_getstocks_begin, increase)
+	process_getstocks_storeandscroll = update_process_sleep(process_getstocks_storeandscroll, increase)
 	process_stockinfo = update_process_sleep(process_stockinfo, increase)
 	process_buy = update_process_sleep(process_buy, increase)
 	process_sell = update_process_sleep(process_sell, increase)
@@ -145,9 +170,41 @@ def enable_practice_mode():
 	TIMEOUTS_EDITED = True
 
 # initiates a connection to URL_HOME
-def initiate_connection(webdriverfile, loginrequired=True):
+def initiate_connection(webdriverfile, loginusername=None, loginpassword=None):
 	global HOMELOAD_TO
-	return seleniumprocessor.initiate_connection(webdriverfile, get_urlhome(), HOMELOAD_TO, loginrequired)
+	brw = seleniumprocessor.initiate_connection(webdriverfile, get_urlhome(), HOMELOAD_TO, loginusername is None)
+	if not loginusername is None:
+		tmp_process_login = copy.deepcopy(process_login)
+		for i in range(0, len(tmp_process_login)):
+			if tmp_process_login[i].get('action_parameters') is None: continue
+			if '{USERNAME}' in tmp_process_login[i].get('action_parameters'): tmp_process_login[i]['action_parameters'] = str(loginusername)
+			if '{PASSWORD}' in tmp_process_login[i].get('action_parameters'): tmp_process_login[i]['action_parameters'] = str(loginpassword)
+		seleniumprocessor.run_process(brw, get_urlhome(), HOMELOAD_TO, tmp_process_login, backtohome_begin=False)
+	return brw
+
+# returns the list of stocks
+def get_stocks_list(brw, navigationpath=None):
+	tmp_process_getstocks_begin = copy.deepcopy(process_getstocks_begin)
+	for i in range(0, len(tmp_process_getstocks_begin)):
+		if tmp_process_getstocks_begin[i].get('action_parameters') is None: continue
+		if '{NAVIGATION_PATH}' in tmp_process_getstocks_begin[i].get('action_parameters'):
+			if navigationpath is None: del tmp_process_getstocks_begin[i]
+			else: tmp_process_getstocks_begin[i]['action_parameters'] = navigationpath
+	seleniumprocessor.run_process(brw, get_urlhome(), HOMELOAD_TO, tmp_process_getstocks_begin, backtohome_end=False, checkfilterpassed_callback=checkfilterpassed)
+	r = []
+	max_height = brw.find_elements_by_class_name('scrollable-area')[1].find_element_by_tag_name('div').size['height']
+	while True:
+		l = seleniumprocessor.run_process(brw, get_urlhome(), HOMELOAD_TO, process_getstocks_storeandscroll, backtohome_begin=False, backtohome_end=False, checkfilterpassed_callback=checkfilterpassed)
+		l = l.get('list')
+		for e in l:
+			if not e in r: r.append(e.get('ticker').replace(')', '(').replace('(', ''))
+		# checking if last element
+		attrs = brw.find_elements_by_class_name('item-wrapper')[-1].get_attribute("style").replace('; ', ';').split(';')
+		el_height = 0
+		for a in attrs:
+			if 'top' in a or 'heigth' in a: el_height += int(a.replace(': ', ':').split(':')[1].replace('px', ''))
+		if el_height >= max_height: break
+	return r
 
 # retrieves information from a stock with a given ticker, optionally, returning home at the begin/end of the method
 def get_stock_info(brw, ticker, backtohome_begin=True, backtohome_end=True):
