@@ -170,9 +170,9 @@ def enable_practice_mode():
 	TIMEOUTS_EDITED = True
 
 # initiates a connection to URL_HOME
-def initiate_connection(webdriverfile, loginusername=None, loginpassword=None):
+def initiate_connection(webdriverfile, loginusername=None, loginpassword=None, headless=False):
 	global HOMELOAD_TO
-	brw = seleniumprocessor.initiate_connection(webdriverfile, get_urlhome(), HOMELOAD_TO, loginusername is None)
+	brw = seleniumprocessor.initiate_connection(webdriverfile, get_urlhome(), HOMELOAD_TO, loginusername is None, headless)
 	if not loginusername is None:
 		tmp_process_login = copy.deepcopy(process_login)
 		for i in range(0, len(tmp_process_login)):

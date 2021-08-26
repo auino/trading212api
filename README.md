@@ -19,7 +19,7 @@ Install a [Selenium](https://www.selenium.dev) web driver, e.g., the [Chrome Web
 
 * `enable_real_mode()`: this method is used to enable real/live mode
 * `enable_practice_mode()`: this method is used to enable practice/demo mode
-* `initiate_connection(webdriverfile, loginusername=None, loginpassword=None)`: initializes the connection to [Trading212](https://www.trading212.com) through [Selenium](https://www.selenium.dev), optionally asking for username and password to login; in such case, an automatic login will be performed; otherwise, user interaction will be required, for a manual login to occur
+* `initiate_connection(webdriverfile, loginusername=None, loginpassword=None, headless=False)`: initializes the connection to [Trading212](https://www.trading212.com) through [Selenium](https://www.selenium.dev), optionally asking for username and password to login; in such case, an automatic login will be performed; otherwise, user interaction will be required, for a manual login to occur; if `headless` is `True`, the browser will be executed in headless mode
 * `get_stocks_list(brw, navigationpath=None)`: returns all the list of stocks available, optionally selecting a specific `>` separated list identifying the navigation path, in terms of content, to follow
 * `get_stock_info(brw, ticker, backtohome_begin=True, backtohome_end=True)`: starting from a `selenium.webdriver.chrome.webdriver.WebDriver` object `brw`, this method retrieves information from a stock identified by a given `ticker`, optionally, returning home at the begin/end of the method
 * `get_portfolio(brw)`: starting from a `selenium.webdriver.chrome.webdriver.WebDriver` object `brw`, this method returns information on the current portfolio
